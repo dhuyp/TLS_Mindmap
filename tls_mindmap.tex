@@ -1,0 +1,660 @@
+ %%                                                                                                                                        %%
+%                                   Cartographie des suites cryptographiques TLS v1.0                            %
+%                                   par Pierre d'Huy et disponible sur pierre.dhuy.net                               %
+ %%                                                                                                                                        %%
+
+%%% à l'exception des lignes suivantes, ce code est sous licence BSD clause 2
+%%% Pierre d'Huy 2016 @ pierre _AT_ dhuy _DOT_ net
+
+%% Mindmap inspiré du travaille de Stefan Kottwitz
+% Les boites d'informations ont été entièrement écrites par lui
+% Le code de l'encart est inspiré de lui
+
+%TODO:
+% - Ajouter des fonds par famille *DH*, *RSA, mot de passe prépartagé (PSK, SRP, KRB5)
+
+\documentclass[border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz,times}
+\usepackage{graphics}
+\usetikzlibrary{mindmap,shadows,backgrounds,calc}
+\usepackage[hidelinks,pdfencoding=auto]{hyperref}
+\usepackage{amsfonts}
+\usepackage{comment}
+
+\includecomment{xen}% for settings language
+\excludecomment{xfr}%
+
+\renewcommand{\familydefault}{\sfdefault}
+
+% Information boxes
+\newcommand*{\info}[4][16.3]{%
+  \node [ annotation, #3, scale=0.65, text width = #1em,
+          inner sep = 3mm ] at (#2) {%
+  \list{$\bullet$}{\topsep=0pt\itemsep=0pt\parsep=0pt
+    \parskip=0pt\labelwidth=8pt\leftmargin=8pt
+    \itemindent=0pt\labelsep=2pt}%
+    \small#4
+  \endlist
+  };
+}
+\newcommand*{\encart}[4][16.3]{%
+  \node [ annotation, #3, scale=0.65, text width = #1em,
+          inner sep = 5mm ] at (#2) {
+    #4
+  };
+}
+\begin{document}
+
+\begin{tikzpicture}[ every annotation/.style = {draw, fill = white, font = \Large}]
+  \path[mindmap,concept color=Cerulean,text=white,
+    every node/.style={concept},
+    root/.style    = {concept color=Cerulean,
+      font=\LARGE\bfseries,text width=10em},
+    good/.style    = {concept color=green!40!black},
+    bad/.style    = {concept color=red!60!black},
+    medium/.style    = {concept color=Cerulean},
+    deprecated/.style    = {concept color=orange},
+    level 1 concept/.append style={font=\Large\bfseries,
+      sibling angle=45,text width=7em,
+    level distance=30em,inner sep=0pt},
+    level 2 concept/.append style={sibling angle=36, font=\small\bfseries,level distance=10em,text width=5.5em},
+    level 3 concept/.append style={sibling angle=36, font=\footnotesize\bfseries,level distance=8em,text width=4em},
+    level 4 concept/.append style={sibling angle=45, font=\scriptsize\bfseries,level distance=5em,text width=3em},
+    level 5 concept/.append style={sibling angle=45, font=\tiny\bfseries,level distance=4em,text width=3em}
+  ]
+
+  node[root] {TLS} [clockwise from=0]
+    child[good] {% Famille TLS_RSA, TLS_RSA_PSK se trouve en bloc de fin car ajouté plus tard
+      node {\underline{\textit{RSA}}} [clockwise from=160]
+        child[bad] { node [concept](RSANULL){NULL}}
+        child[bad] { node [concept](RSARC4){RC4\\128}}
+        child[bad] { node [concept](RSA3DES){3DES-EDE}[clockwise from=60]}
+        child[medium] { node [concept]{AES\\128}[clockwise from=60]
+          child { node [concept]{CBC}[clockwise from=82]
+            child[deprecated] { node [concept]{SHA}}
+            child { node [concept]{SHA256}}
+          }
+         child { node [concept]{GCM}[clockwise from=40]
+            child { node [concept](RSAAES128SHA256){SHA256}}
+          }
+        }
+        child[good] { node [concept] {AES\\256}[clockwise from=30]
+          child[medium] { node [concept]{CBC}[clockwise from=40]
+            child[deprecated] { node [concept]{SHA}}
+            child { node [concept]{SHA256}}
+          }
+         child { node [concept]{GCM}[clockwise from=0]
+            child { node [concept]{SHA384}}
+          }
+        }
+        child[medium] { node [concept]{CAMELLIA\\128}[clockwise from=350]
+          child { node [concept]{CBC}[clockwise from=0]
+            child { node [concept](RSACAM128SHA){SHA}}
+          }
+        }
+        child[good] { node [concept]{CAMELLIA\\256}[clockwise from=350]
+          child[medium] { node [concept]{CBC}
+            child[deprecated] { node [concept](RSACAM256SHA){SHA}}
+          }
+        }
+        child[deprecated] { node [concept] {SEED}[clockwise from=340]
+          child { node [concept]{CBC}[clockwise from=350]
+            child { node [concept](RSASEEDSHA){SHA}}
+          }
+        }
+        child[bad] { node [concept](RSAIDEA){IDEA}}
+        child[bad] { node [concept](RSADES){DES}}
+    }%Famille des Diffie-Hellman et Elliptique Curve Diffie-Hellman
+    child[medium,sibling angle=50] {
+      node[concept] {\underline{DH}}
+        [clockwise from=350]
+        child[good] { node [concept](DHRSA){\textit{RSA}}[clockwise from=130]       
+            child[bad] { node [concept](DHDES){DES}}
+            child [bad]{ node [concept](DH3DES){3DES\\EDE}[clockwise from=140]}
+            child[medium,sibling angle=36] { node [concept](DHCAMELLIA128){\tiny CAMELLIA\\128}[clockwise from=0]
+              child { node [concept]{CBC}
+                child[deprecated] { node [concept]{SHA}}
+              }
+            }
+            child { node [concept](DHCAMELLIA256){\tiny CAMELLIA\\256}[clockwise from=0]
+              child[medium] { node [concept]{CBC}
+                child[deprecated] { node [concept](CAMELLIA256SHA){SHA}}
+              }
+            }
+            child[deprecated] { node [concept](DHSEED){SEED}[clockwise from=15]
+              child { node [concept]{CBC}[clockwise from=3]
+                child { node [concept]{SHA}}
+              }
+            }
+            child[medium] { node [concept](DHAES128){AES\\128}[clockwise from=4]
+              child { node [concept]{CBC}[clockwise from=20]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=340]
+                child { node [concept]{SHA256}}
+              }
+            }
+            child[good] { node [concept](DHAES256){AES\\256}[clockwise from=320]
+              child[medium] { node [concept]{CBC}[clockwise from=340]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=300]
+                child { node [concept](DHAES256GCMSHA384){SHA384}}
+              }
+            }
+          }
+        child[good,sibling angle=60] { node [concept](DHDSS){\textit{DSS}}}
+        child[bad,sibling angle=122] { node [concept](DHRSAEXPORT) {\textit{RSA\\EXPORT}} }
+        child[bad,sibling angle=60] { node{\textit{Anon}} }
+    }% Diffie Hellman Ephemeral: pour des raisons pratiques ce noeud est repointé vers RSA, DSS et RSA_EXPORT plutôt que de reproduire à l'identique
+    child[good,sibling angle=38] {
+      node[concept](DHE) {\underline{DHE}}
+        [counterclockwise from=275]
+        child[good] { node [concept](DHEPSK){\textit{PSK}}[clockwise from=50]
+            child[bad] { node [concept](DHERC4){RC4\\128}}
+            child[bad] { node [concept]{NULL}}
+            child [bad]{ node [concept]{3DES\\EDE}[clockwise from=320]}
+            child[medium] { node [concept]{AES\\128}[clockwise from=340]
+              child { node [concept]{CBC}[clockwise from=340]
+                child[deprecated] { node [concept](AES128SHA){SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=300]
+                child { node [concept]{SHA256}}
+              }
+            }
+            child[good] { node [concept]{AES\\256}[clockwise from=290]
+              child[medium] { node [concept]{CBC}[clockwise from=300]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA384}}
+              }
+              child { node [concept]{GCM}[clockwise from=260]
+                child { node [concept]{SHA384}}
+              }
+            }
+        }
+    }
+    child[good,sibling angle=46] {% L'arbre ECDH/ECDHE est mieux équilibré permettant une meilleure lecture des liens
+      node[concept] (ECDHE){\underline{ECDHE}}
+        [clockwise from=355]
+        child[good,sibling angle=50] { node [concept](ECDHRSA){\textit{RSA}}[clockwise from=0]
+            child[good] { node [concept](ECDHAES256){AES\\256}[counterclockwise from=320]
+              child[medium] { node [concept]{CBC}[counterclockwise from=240]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA384}}
+              }
+              child { node [concept]{GCM}[clockwise from=300]
+                child { node [concept]{SHA384}}
+              }
+            }
+            child[bad] { node [concept](ECDHNULL){NULL}}
+            child[level distance=18em] { node [concept](ECDHCHACHA20){\scriptsize CHACHA20}[counterclockwise from=280]% CHACHA20
+              child { node [concept]{\tiny POLY1305}[counterclockwise from=340]
+                child{node [concept]{SHA256}}
+              }
+            }
+          }
+        child[good,sibling angle=75] { node [concept](ECDHECDSA){\textit{ECDSA}}[counterclockwise from=270]
+            child [bad]{ node [concept](ECDH3DES){3DES\\EDE}[clockwise from=270]}
+           child[medium] { node [concept](ECDHAES128){AES\\128}[clockwise from=310]
+              child { node [concept]{GCM}[clockwise from=310]
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{CBC}[clockwise from=310]
+                child { node [concept](ECDHECDSASHA256){SHA256}}
+                child[deprecated] { node [concept]{SHA}}
+              }
+            }
+            child[bad] { node [concept](ECDHRC4){RC4\\128}}
+        }
+        child[good,sibling angle=55] { node [concept](ECDHPSK){\textit{PSK}}[clockwise from=270]
+            child [bad]{ node [concept]{3DES\\EDE}[counterclockwise from=270]}
+            child[medium] { node [concept]{AES\\128}[clockwise from=270]
+              child { node [concept]{CBC}[clockwise from=280]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=230]
+                child { node [concept]{SHA256}}
+              }
+            }
+            child[good] { node [concept]{AES\\256}[clockwise from=210]
+              child[medium] { node [concept]{CBC}[clockwise from=270]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept](ECDHPSKAES256SHA384){SHA384}}
+              }
+              child { node [concept]{GCM}[clockwise from=210]
+                child { node [concept]{SHA384}}
+              }
+            }
+            child[bad] { node [concept]{RC4\\128}}
+            child[bad] { node [concept]{NULL}}
+        }
+    }
+    child[medium,sibling angle=39] {
+      node[concept] (ECDH) {\underline{ECDH}} [counterclockwise from=220]
+        child[bad] { node [concept](ECDHANON){\textit{Anon}}}
+    }
+    child[medium,sibling angle=39] {%PSK doit il être noté comme deprecated? Je ne pense pas mais un changement se tiendrait
+      node[concept] (PSK){\underline{\textit{PSK}}} [clockwise from=240]
+            child [bad]{ node [concept]{3DES\\EDE}[clockwise from=260]}
+            child[medium] { node [concept]{AES\\128}[clockwise from=270]
+              child { node [concept]{CBC}[counterclockwise from=210]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=200]
+                child { node [concept]{SHA256}}
+              }
+            }
+            child[good] { node [concept]{AES\\256}[counterclockwise from=190]
+              child[medium] { node [concept]{CBC}[clockwise from=210]
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept]{SHA384}}
+              }
+              child { node [concept]{GCM}[clockwise from=220]
+                child { node [concept]{SHA384}}
+            }
+         }
+            child[good] { node [concept]{\scriptsize CHACHA20}[counterclockwise from=200]
+              child { node [concept]{\tiny POLY1305}[counterclockwise from=175]
+                child{node [concept]{SHA256}}
+              }
+            }
+            child[bad] { node [concept]{RC4\\128}}
+            child[bad,sibling angle=45] { node [concept]{NULL}}
+    }
+    child[deprecated,sibling angle=37] {% SRP utilise SHA-1 donc deprecated
+          node[concept] {\underline{\textit{SRP\_SHA}}} [clockwise from=160]
+            child[bad] { node [concept](SRP3DES){3DES\\EDE}[clockwise from=205] }
+            child{ node [concept](SRPAES128){AES\\128}[clockwise from=190]
+              child { node [concept]{CBC}[clockwise from=210]
+                child { node [concept](SRPSHA){SHA}}
+            }}
+            child{ node [concept](SRPAES256){AES\\256}[clockwise from=150]
+              child { node [concept]{CBC}[clockwise from=210]
+                child { node [concept]{SHA}}
+            }}
+            child[sibling angle=40] { node [concept](SRPRSA) {\textit{RSA}}}
+            child[sibling angle=40] { node [concept](SRPDSS) {\textit{DSS}}}
+    }
+    child[bad,sibling angle=36.7] {
+      node[concept] {\underline{NULL}}
+    }
+    child[deprecated,sibling angle=34] {
+      node[concept](KRB5) {\underline{\textit{KRB5}}}[clockwise from=135]
+        child[bad] { node [concept]{IDEA}}
+            child[bad] { node [concept]{3DES\\EDE}[clockwise from=165]}
+        child[bad] { node [concept](KRB5DES){DES}}
+        child[bad] { node [concept]{RC4}}
+    }
+    child[bad,sibling angle=33] {
+      node[concept](ANYEXPORT) {(ANY)\\\underline{EXPORT}}
+    }
+    child[sibling angle=31.5] {
+      node[concept] {\underline{RSA}}[counterclockwise from=20]
+      	child{node [concept]{\textit{PSK}}
+            child[medium] { node [concept]{AES\\128}[clockwise from=5]
+              child { node [concept]{CBC}[clockwise from=5]
+                child[deprecated] { node [concept](RSAPSKSHA2){SHA}}
+                child { node [concept]{SHA256}}
+              }
+              child { node [concept]{GCM}[clockwise from=325]
+                child { node [concept]{SHA256}}
+              }
+            }
+            child[good] { node [concept]{AES\\256}[clockwise from=45]
+              child[medium] { node [concept]{CBC}[clockwise from=45]
+                child[deprecated] { node [concept](RSAPSKSHA){SHA}}
+                child { node [concept]{SHA384}}
+              }
+              child { node [concept]{GCM}[clockwise from=0]
+                child { node [concept]{SHA384}}
+              }
+            }
+            child[bad] { node [concept]{RC4\\128}}
+            child[good, level distance=16em] { node [concept]{\scriptsize CHACHA20}[counterclockwise from=10]
+              child { node [concept]{\tiny POLY1305}[counterclockwise from=350]
+                child{node [concept]{SHA256}}
+              }
+            }
+            child[bad] { node [concept]{NULL}}
+	}
+    };
+
+  
+%Lien ajouté en fond pour les interaction supplémentaires
+  \begin{pgfonlayer}{background}
+      \path [outer color = white, inner color = blue!10]
+      (-60em,-60em) rectangle (80em,40em);%Dégradé de couleurs pour le fond
+    \path (DHE) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DHRSAEXPORT);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DHERC4);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DHDES);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DH3DES);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (orange)] (DHSEED);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (DHCAMELLIA128);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (DHAES128);
+    \path (ECDHECDSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDHNULL);
+    \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDHRC4);
+    \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (ECDHAES128);
+    \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDH3DES);
+    \path (ECDH) to[circle connection bar switch color=from (Cerulean) to (green!40!black) ] (ECDHECDSA);
+    \path (ECDH) to[circle connection bar switch color=from (Cerulean) to (green!40!black) ] (ECDHRSA);
+    \path (SRPRSA) to[circle connection bar switch color=from (orange) to (red!60!black) ] (SRP3DES);
+    \path (SRPDSS) to[circle connection bar switch color=from (orange) to (red!60!black) ] (SRP3DES);
+    \fill [circle connection bar]
+      (DHE) edge[fill=green!40!black, color=green!40!black] (DHRSA)
+      (DHE) edge[fill=green!40!black, color=green!40!black] (DHDSS)
+      (DHDSS) edge[fill=green!40!black, color=green!40!black] (DHAES256)
+      (DHDSS) edge[fill=green!40!black, color=green!40!black] (DHCAMELLIA256)
+      (ECDHECDSA) edge[fill=green!40!black, color=green!40!black] (ECDHAES256)
+      (ECDHECDSA) edge[fill=green!40!black, color=green!40!black] (ECDHCHACHA20)
+      (ECDHPSK) edge[fill=green!40!black, color=green!40!black] (ECDHCHACHA20)
+      (DHEPSK) edge[fill=green!40!black, color=green!40!black] (ECDHCHACHA20)
+      (SRPRSA) edge[fill=orange, color=orange] (SRPAES128)
+      (SRPRSA) edge[fill=orange, color=orange] (SRPAES256)
+      (SRPDSS) edge[fill=orange, color=orange] (SRPAES128)
+      (SRPDSS) edge[fill=orange, color=orange] (SRPAES256)
+      ;
+  \end{pgfonlayer}
+
+
+
+
+
+%%% ESPACE LINGUISTIQUE
+
+
+%Légende
+  \path(50em, -55em)[mindmap,concept color=Cerulean,text=white,
+    every node/.style={concept},
+    root/.style    = {concept color=Cerulean,
+      font=\LARGE\bfseries,text width=10em},
+    good/.style    = {concept color=green!40!black},
+    bad/.style    = {concept color=red!60!black},
+    medium/.style    = {concept color=Cerulean},
+    deprecated/.style    = {concept color=orange},
+    level 1 concept/.append style={font=\small\bfseries,
+      sibling angle=45,text width=7em,
+    level distance=13em,inner sep=0pt},
+    level 2 concept/.append style={font=\small\bfseries,level distance=10em,text width=6em},
+    level 3 concept/.append style={font=\footnotesize\bfseries,level distance=8em,text width=4.5em},
+    level 4 concept/.append style={font=\scriptsize\bfseries,level distance=6em,text width=4em},
+    level 5 concept/.append style={font=\tiny\bfseries,level distance=5.5em,text width=4em}
+  ]
+  node[root] {Protocole} [counterclockwise from=0]
+     child {
+      node [concept]{\underline{Key Exchange} \underline{Protocol}}
+        child { node [concept]{\textit{Authentication Protocol}}
+          child { node [concept]{Symetric Encryption Algorithm}
+            child { node [concept]{Encryption Mode}
+              child { node [concept]{Hash Algorithm}}
+          }
+        }
+      }
+    };
+\begin{xfr}
+  \path(57em, -45em)[mindmap,concept color=green!40!black,text=white,
+    every node/.style={concept},
+    root/.style    = {concept color=green!40!black,
+      font=\large\bfseries,text width=7em,level distance=12em},
+    good/.style    = {concept color=green!40!black},
+    bad/.style    = {concept color=red!60!black},
+    medium/.style    = {concept color=Cerulean},
+    deprecated/.style    = {concept color=orange},
+    level 1 concept/.append style={font=\large\bfseries,level distance=12em,text width=7em},
+    level 2 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 3 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 4 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 5 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em}
+  ]
+  node[root] {Recommandé} [counterclockwise from=0]
+    child[medium]{
+      node  {Standard } [clockwise from=0]
+        child[deprecated] { node [concept]{Désuet}
+          child[bad] { node [concept]{Dangereux}}
+        }
+    };
+\end{xfr}
+\begin{xen}
+  \path(57em, -45em)[mindmap,concept color=green!40!black,text=white,
+    every node/.style={concept},
+    root/.style    = {concept color=green!40!black,
+      font=\large\bfseries,text width=7em,level distance=12em},
+    good/.style    = {concept color=green!40!black},
+    bad/.style    = {concept color=red!60!black},
+    medium/.style    = {concept color=Cerulean},
+    deprecated/.style    = {concept color=orange},
+    level 1 concept/.append style={font=\large\bfseries,level distance=12em,text width=7em},
+    level 2 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 3 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 4 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
+    level 5 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em}
+  ]
+  node[root] {Recommended} [counterclockwise from=0]
+    child[medium]{
+      node  {Standard} [clockwise from=0]
+        child[deprecated] { node [concept]{Deprecated}
+          child[bad] { node [concept]{Dangerous}}
+        }
+    };
+\end{xen}
+
+\begin{xfr}
+%Encart explicatif
+    \encart[43]{(67em,45em}{anchor=north west}{%
+      \textbf{\Huge{Cartographie des suites cryptographiques TLS}}\newline\\\Large{Cette mindmap représente l'état de l'art en matière de suites cryptographiques. Elle a été réalisée à des fins pratiques pour permettre une lecture rapide des éléments dangereux. Pour des raisons de lisibilité, les branches dites dangereuses telles que les suites EXPORT ou NULL sont tronquées après l'élément les déterminant comme dangereuses.\\Cette carte représente les recommandations en accord avec les RFC, le NIST et l'ANSSI, telles que:\begin{itemize}\item \textbf{Recommandé} désigne les algorithmes et les suites cryptographiques considérés comme sûrs au vu de l'état de l'art.\item \textbf{Standard} désigne un algorithme ou une ciphersuite n'étant sujet à aucune recommandation mais n'étant pas sujet à une contre-indication majeure.\item \textbf{Désuet} désigne les algorithmes étant considérés aujourd'hui comme faibles et exposés à certaines attaques. Cependant, ou qu'une mitigation existe côté client, ou que ce protocole soit nécessaire pour fonctionner avec d'anciens navigateurs, ils restent possibles à utiliser en acceptant le risque induit.\item\textbf{Dangereux} désigne les ciphersuites ne permettant aucune protection de la confidentialité, de l'authenticité ou de l'intégrité. Elles peuvent être classées ainsi pour des principes de fonctionnement (Anon et NULL), des faibles tailles de clef (DES,IDEA,EXPORT), des faiblesses majeures dans le mécanisme de chiffrement (RC4).\end{itemize}De plus les algorithmes sont représentés dans l'ordre de lecture de la suite cryptographique, c'est à dire:\begin{itemize}\item \textbf{Protocole} (Ici forcément TLS) \item \underline{\textbf{Key Exchange Protocol}} (en souligné) est le protocole utilisé pour l'échange de clef. \item \textit{Authentication Protocol} (en italique) est le protocole assurant l'authenticité de la connexion en étant utilisé pour la signature de la communication. Cette étape peut être facultative et à la charge de l'algorithme d'échange de clef.\item Symetric Encryption Algorithm est l'algorithme utilisé pour chiffrer la communication. \item Encryption Mode est le mode de chiffrement par bloc utilisé avec cet algorithme.\item Hash algorithm est l'algorithme de hash utilisé pour le contrôle d'intégrité des messages. \end{itemize}Pour des raisons pratiques les algorithmes expérimentaux n'ont pas été représentés, tel que CECPQ1\_ECDSA, suites cryptographiques testées par Google dans son navigateur Chrome pour la Cryptographie Post Quantique. De même, l'algorithme GOST utilisé sous ses formes GOSTR341094 et GOSTR341001 n'a pas été représenté du fait du manque d'utilité et de son danger. En effet les attaques actuelles permettent de s'attaquer à l'algorithme de chiffrement symétrique GOST28147 en $2^{101}$ opérations}.
+    }
+\end{xfr}
+\begin{xen}
+    \encart[43]{(67em,45em}{anchor=north west}{%
+      \textbf{\Huge{Mindmap for TLS Ciphersuits}}\newline\\\Large{This mindmap presents the state of the art of TLS ciphersuits. Its first functionnality is to offer an explicit reading for dangerous items. To be readable, the dangerous branchs (like EXPORT or NULL) have been cut after the first identified danger.\\This mindmap illustrates recommandations about usage according to RFC, NIST and the french security agency, ANSSI. These recommandations are structured in 4 categories:\begin{itemize}\item \textbf{Recommanded}: The recommanded algorithms are chosen according to the state of the art in Cryptography. These algorithms \textit{should} be used. \item \textbf{Standard}: The ''standard'' algorithms are defined by algorithm without any recommandation either any known problems. These algorithms \textit{can} be used. \item \textbf{Deprecated}: The deprecated algorithms are algorithms with known weakness or problems but needed for legacy. These algorithms \textit{shouldn't} be used. \item\textbf{Dangerous}: The dangerous algorithms expose integrity, confidentiality or authenticity. These algorithms can be classified as dangerous for many reasons: by design (Anon and NULL), weak size of key (DES,IDEA,EXPORT) or weakness in  implementation (RC4). These algorithms \textit{must not} be used.\end{itemize}Algorithms are presented following the order of ciphersuits reading, i.e. :\begin{itemize}\item \textbf{Protocol} (Here it's TLS) \item \underline{\textbf{Key Exchange Protocol}} (underlined) is the protocol used in Server and Client Key Exchange.\item \textit{Authentication Protocol} (italics) is the protocol used to signed the communication. This protocol can be substituted with Key Exchange Protocol for some ciphersuits. \item Symetric Encryption Algorithm is the cipher algorithm used for the communication. \item Encryption Mode is the block cipher mode used by the encryption algorithm.\item Hash algorithm is used to control integrity of packet with MAC. \end{itemize}For practical reason, the experimental algorithms, like CECPQ1\_ECDSA, won't be presented. GOST en FORTENZA algorithms won't be shown either and must not be used}.
+    }
+\end{xen}
+
+%Note explicative dans le document
+
+\begin{xfr}
+    \info[20]{ANYEXPORT.north}{anchor=south west}{%
+      \item[] Les suites \textbf{EXPORT} sont toutes considérées comme dangereuses depuis les années 90, date de leur mise en place.
+    }
+\end{xfr}
+\begin{xen}
+    \info[20]{ANYEXPORT.north}{anchor=south west}{%
+      \item[] The \textbf{EXPORT} ciphersuits has been built as dangerous and must not be used except under heavy law restriction.
+    }
+\end{xen}
+\begin{xfr}
+    \info[20]{KRB5DES.north}{anchor=south west}{%
+      \item[] Les suites \textbf{KRB5} sont basées sur l'implémentation de Kerberos en TLS. \`A l'image de l'authentification sur le domaine, le client utilise un ticket pour s'authentifier. Le client envoie ensuite un \textit{pre\_master\_secret} de 48 bits aléatoires chiffré avec la clef de session Kerberos encapsulée dans le ticket de session.
+    }
+\end{xfr}
+\begin{xen}
+    \info[20]{KRB5DES.north}{anchor=south west}{%
+      \item[] The \textbf{KRB5} ciphersuits are based on Kerberos and use ticket to encrypt and send the \textit{pre\_master\_secret} in Kerberos Session.
+     }
+\end{xen}
+\begin{xfr}
+    \info[15]{RSA3DES.north}{anchor=south east}{%
+      \item[] L'algorithme 3DES-EDE ne doit plus être utilisé du fait des attaques par collision sur les chiffrement par bloc de 32 bits.
+    }
+\end{xfr}
+\begin{xen}
+    \info[15]{RSA3DES.north}{anchor=south east}{%
+      \item[] 3DES-EDE must not be used due to 32 bits block cipher attacks.
+    }
+\end{xen}
+\begin{xfr}
+    \info[17]{ECDHANON.west}{anchor=east}{%
+      \item[] Les échanges de clefs anonymes sont facilement attaquables à l'aide d'une interception, l'échange doit toujours être signé.
+    }
+\end{xfr}
+\begin{xen}
+    \info[17]{ECDHANON.west}{anchor=east}{%
+      \item[] The Key Exchange is easy to hijack without authentication and should be signed to avoid Man-in-the-Middle attack.
+    }
+\end{xen}
+\begin{xfr}
+    \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
+      \item[] Les suites \textbf{DH} sont des algorithmes d'échanges de clef reposant sur la difficulté de calculer des factorisations dans des groupes finis. Les suites \textbf{DHE} permettent en plus de garantir le Perfect Forward Secrecy (PFS) c'est à dire la sécurité des communications antérieures en cas de compromission de la clef, en générant une clef à chaque session.
+    }
+\end{xfr}
+\begin{xen}
+    \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
+      \item[] \textbf{DH} ciphersuits use Key Exchange algorithms based on factorisation difficulty of a GF(p). \textbf{DHE} ciphersuits allow Perfect Forward Secrecy (PFS), i.e. previous communication protection even after key compromission.
+    }
+\end{xen}
+\begin{xfr}
+    \info[20]{ECDHPSKAES256SHA384.west}{anchor=east}{%
+      \item[] Le mode de chiffrement \textbf{CBC} est systématiquement dégradé à Standard malgré une sécurité parfaite dans le cas d'une connexion effectuée depuis un navigateur moderne. En effet, l'algorithme souffre d'une attaque par padding qui n'est pas corrigée sur les anciens navigateurs, cette attaque s'appelle POODLE.
+    }
+\end{xfr}
+\begin{xen}
+    \info[20]{ECDHPSKAES256SHA384.west}{anchor=east}{%
+      \item[] \textbf{CBC} is degraded to Standard although its security is perfect in modern context. However a padding attack exists (POODLE) against legacy browser.
+    }
+\end{xen}
+\begin{xfr}
+    \info[12]{DHDSS.south}{anchor=north}{%
+      \item[] Dans le cas d'un DHE, DSS incorpore également RC4 128 bits comme algorithme de chiffrement. RC4 est dangereux et ne doit jamais être utilisé.
+    }
+\end{xfr}
+\begin{xen}
+    \info[12]{DHDSS.south}{anchor=north}{%
+      \item[] With DHE Key Exchange, DSS offers RC4 128 as encryption algorithm. This algorithm must not be used.
+    }
+\end{xen}
+\begin{xfr}
+    \info[12]{RSARC4.west}{anchor=east}{%
+      \item[] L'algorithme RC4 est vulnérable à un biais dans son PRNG, cette attaque s'appelle Bar-Mitzvah.
+    }
+\end{xfr}
+\begin{xen}
+    \info[12]{RSANULL.north}{anchor=south east}{%
+      \item[] RC4 is a symetric encryption algorithm. It must not be used. It has a weakness in its PRNG and can be exploited in the Bar-Mitzvah attack.
+    }
+\end{xen}
+\begin{xfr}
+    \info[22]{ECDHRSA.north}{anchor=south west}{%
+      \item[] La combinaison \textbf{*DHE\_*SA\_WITH\_AES\_256\_GCM\_SHA384} est la combinaison recommandée du fait de ses propriétés de PFS et de la solidité actuelle de AES256. De plus le mode de chiffrement GCM est un mode authentifié excluant les attaques par padding dont CBC a été victime.
+   }
+\end{xfr}
+\begin{xen}
+    \info[22]{ECDHRSA.north}{anchor=south west}{%
+      \item[] The ciphersuits \textbf{*DHE\_*SA\_WITH\_AES\_256\_GCM\_SHA384} are recommanded. Indeed with PFS property and AES 256 solidity, it's the best possibility. Moreover, the use of GCM mode is authenticated and avoid padding attack like POODLE.
+   }
+\end{xen}
+\begin{xfr}
+    \info[15]{ECDHCHACHA20.north}{anchor=south west}{%
+      \item[] L'algorithme CHACHA20 est basée sur la \href{https://tools.ietf.org/html/rfc7905}{\textbf{RFC7905}} et dérive de SALSA20, POLY1305 permet d'assurer une probabilité de collision faible.
+    }
+\end{xfr}
+\begin{xen}
+    \info[15]{ECDHCHACHA20.north}{anchor=south west}{%
+      \item[] The CHACHA20 algorithm is based on the \href{https://tools.ietf.org/html/rfc7905}{\textbf{RFC7905}} and built from SALSA20, POLY1305 grants a weak probability of colision occurrence.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{PSK.south}{anchor=north west}{%
+      \item[] \textit{\textbf{PSK}} est utilisé comme protocole d'échange permettant également de gérer l'authentification du serveur. Il repose sur le partage préalable de la clef symétrique de communication en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK est très utile dans un contexte de systèmes embarqués.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{PSK.south}{anchor=north west}{%
+      \item[] \textit{\textbf{PSK}} is used as an exchange protocol with authentification included. It uses a Pre-Shared Key as specified in the \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK is useful in embeded systems.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{RSADES.west}{anchor=north east}{%
+      \item[] DES et IDEA sont aujourd'hui des algorithmes trop faibles pour garantir une bonne sécurité.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{RSADES.west}{anchor=north east}{%
+      \item[] Nowadays, DES and IDEA are too weak to grant good security.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{SRPSHA.west}{anchor=south east}{%
+      \item[] \textit{\textbf{SRP}} est utilisé comme algorithme pour l'authentification et l'échange de clefs comme spécifié dans la \href{https://tools.ietf.org/html/rfc2945\#section-3}{\textbf{RFC 2945 - §3}}. Le serveur stocke un HMAC salé du username et du password hashés, l'échange repose sur les propriétés du groupe $\mathbb{Z}/p\mathbb{Z}$. Cette authentification est gérée par les extensions de TLS. \\Le choix de classer SRP comme \textit{deprecated} est dû à l'utilisation exclusive de SHA-1 dans les mécanismes de HMAC.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{SRPSHA.west}{anchor=south east}{%
+      \item[] \textit{\textbf{SRP}} is used as authenticated key exchange protocol as specified in the \href{https://tools.ietf.org/html/rfc2945\#section-3}{\textbf{RFC 2945 - §3}}. The server stores a salt HMAC of username and password. The exchange uses $\mathbb{Z}/p\mathbb{Z}$. This authentication is managed with TLS extensions\\SRP is \textit{deprecated} because of the use of SHA-1 as only HMAC hash algorithm.
+    }
+\end{xen}
+\begin{xfr}
+    \info[12]{SRPAES256.east}{anchor=south west}{%
+      \item[] SRP peut fonctionner en mode authentifié avec DSS ou RSA. Le SKE est alors signé par la clef privée.
+    }
+\end{xfr}
+\begin{xen}
+    \info[12]{SRPAES256.east}{anchor=south west}{%
+      \item[] SRP can use DSS or RSA for authentication. SKE will be signed with private key.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{RSAPSKSHA2.east}{anchor=west}{%
+      \item[] \textit{\textbf{RSA}} est utilisé comme protocole d'authentification du serveur et d'échange de clefs tel que défini par la \href{https://tools.ietf.org/html/rfc5246\#section-8.1.1}{\textbf{RFC 5246 - §8.1}}. Le protocole consiste en la génération d'un \textit{pre\_master\_secret} par le client qui l'envoie chiffré au serveur. Dans le cas de \textbf{RSA}\_\textit{PSK}, la clef partagée consiste alors en la longueur du bloc (par défaut 48), la version et 46 bits aléatoire concaténés avec la longueur du PSK et le PSK (en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-4}{\textbf{RFC 4279 - §4}}).
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{RSAPSKSHA2.east}{anchor=west}{%
+      \item[] \textit{\textbf{RSA}} is used as authenticated key exchange protocol as specified in the \href{https://tools.ietf.org/html/rfc5246\#section-8.1.1}{\textbf{RFC 5246 - §8.1}}. This protocol is based on the generation of a \textit{pre\_master\_secret} by the client who sends it encrypted to the server. For \textbf{RSA}\_\textit{PSK}, the shared key becomes a concatenation of block's size, version and 46 random bits with the PSK's size and PSK (based on \href{https://tools.ietf.org/html/rfc4279\#section-4}{\textbf{RFC 4279 - §4}}).
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{RSACAM256SHA.east}{anchor=west}{%
+      \item[] SHA-1 est considéré comme désuet et ne devrait plus être utilisé.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{RSACAM256SHA.east}{anchor=west}{%
+      \item[] SHA-1 is deprecated and shouldn't be used anymore.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{RSAAES128SHA256.east}{anchor=south west}{%
+      \item[] AES 128 bits est recommandé par l'ANSSI, en revanche la \href{https://www.iad.gov/iad/programs/iad-initiatives/cnsa-suite.cfm}{CNSA} recommande AES 256 bits.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{RSAAES128SHA256.east}{anchor=south west}{%
+      \item[] AES 128 is recommended by the french agency ANSSI, however, the \href{https://www.iad.gov/iad/programs/iad-initiatives/cnsa-suite.cfm}{CNSA} recommends the use of AES 256.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{CAMELLIA256SHA.east}{anchor=south west}{%
+      \item[] CAMELLIA est un algorithme de chiffrement symétrique basée sur des réseaux de Feistel. Les suites cryptographiques TLS ont été étendues par la \href{https://tools.ietf.org/html/rfc6367}{\textbf{RFC 6367}}, cette extension n'est pas reflétée ici car inutilisée. Son utilisation est encouragée par le standard japonais CRYPTEREC. Cependant l'algorithme n'est plus supporté par aucun navigateur majeur.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{CAMELLIA256SHA.east}{anchor=south west}{%
+      \item[] CAMELLIA is a symetric encryption algorithm based on Feistel network. An extension of its ciphersuits implementation has been brought by the \href{https://tools.ietf.org/html/rfc6367}{\textbf{RFC 6367}}. These ciphersuits aren't shown here because of their lack of implementation. This algorithm is recommended by the japanese initiative CRYPTEREC. However, this algorithm isn't supported by any major web browser.
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{DHAES256GCMSHA384.south}{anchor=north}{%
+      \item[] Le mode de chiffrement \textbf{GCM} est un mode de chiffrement dit authentifié (AEAD), c'est-à-dire que le chiffrement permet à la fois de garantir l'intégrité ET l'authenticité des messages.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{DHAES256GCMSHA384.south}{anchor=north}{%
+      \item[] \textbf{GCM} cipher mode is an Authenticated Encryption with Associated Data (AEAD), i.e. this cipher mode grants both integrity AND authenticity.
+    }
+\end{xen}
+%Licence du document, pas du code :)
+\begin{xfr}
+  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\Ce document est un travail de Pierre d'Huy sous licence CC-by-sa \\v1.5 (fr) -- \textit{pierre.dhuy.net}\end{center}}
+\end{xfr}
+\begin{xen}
+  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\This document is the work of Pierre d'Huy under CC-by-sa \\v 1.5 (en) -- \textit{pierre.dhuy.net}\end{center}}
+\end{xen}
+
+\end{tikzpicture}
+\end{document}
