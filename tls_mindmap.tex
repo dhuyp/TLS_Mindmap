@@ -23,8 +23,8 @@
 \usepackage{amsfonts}
 \usepackage{comment}
 
-\includecomment{xen}% for settings language
-\excludecomment{xfr}%
+\includecomment{xfr}% for settings language
+\excludecomment{xen}%
 
 \renewcommand{\familydefault}{\sfdefault}
 
@@ -66,7 +66,7 @@
   ]
 
   node[root] {TLS} [clockwise from=0]
-    child[good] {% Famille TLS_RSA, TLS_RSA_PSK se trouve en bloc de fin car ajouté plus tard
+    child[deprecated] {% Famille TLS_RSA, TLS_RSA_PSK se trouve en bloc de fin car ajouté plus tard
       node {\underline{\textit{RSA}}} [clockwise from=160]
         child[bad] { node [concept](RSANULL){NULL}}
         child[bad] { node [concept](RSARC4){RC4\\128}}
@@ -107,7 +107,7 @@
         child[bad] { node [concept](RSAIDEA){IDEA}}
         child[bad] { node [concept](RSADES){DES}}
     }%Famille des Diffie-Hellman et Elliptique Curve Diffie-Hellman
-    child[medium,sibling angle=50] {
+    child[sibling angle=50] {
       node[concept] {\underline{DH}}
         [clockwise from=350]
         child[good] { node [concept](DHRSA){\textit{RSA}}[clockwise from=130]       
@@ -235,11 +235,11 @@
             child[bad] { node [concept]{NULL}}
         }
     }
-    child[medium,sibling angle=39] {
+    child[sibling angle=39] {
       node[concept] (ECDH) {\underline{ECDH}} [counterclockwise from=220]
         child[bad] { node [concept](ECDHANON){\textit{Anon}}}
     }
-    child[medium,sibling angle=39] {%PSK doit il être noté comme deprecated? Je ne pense pas mais un changement se tiendrait
+    child[sibling angle=39] {%PSK doit il être noté comme deprecated? Je ne pense pas mais un changement se tiendrait
       node[concept] (PSK){\underline{\textit{PSK}}} [clockwise from=240]
             child [bad]{ node [concept]{3DES\\EDE}[clockwise from=260]}
             child[medium] { node [concept]{AES\\128}[clockwise from=270]
@@ -268,7 +268,7 @@
             child[bad] { node [concept]{RC4\\128}}
             child[bad,sibling angle=45] { node [concept]{NULL}}
     }
-    child[deprecated,sibling angle=37] {% SRP utilise SHA-1 donc deprecated
+    child[deprecated,sibling angle=37] {% SRP utilise SHA-1 donc deprecated même avec le HMAC <3
           node[concept] {\underline{\textit{SRP\_SHA}}} [clockwise from=160]
             child[bad] { node [concept](SRP3DES){3DES\\EDE}[clockwise from=205] }
             child{ node [concept](SRPAES128){AES\\128}[clockwise from=190]
@@ -295,9 +295,9 @@
     child[bad,sibling angle=33] {
       node[concept](ANYEXPORT) {(ANY)\\\underline{EXPORT}}
     }
-    child[sibling angle=31.5] {
-      node[concept] {\underline{RSA}}[counterclockwise from=20]
-      	child{node [concept]{\textit{PSK}}
+    child[deprecated,sibling angle=31.5] {
+      node[deprecated] {\underline{RSA}}[counterclockwise from=20]
+      	child{node [deprecated]{\textit{PSK}}
             child[medium] { node [concept]{AES\\128}[clockwise from=5]
               child { node [concept]{CBC}[clockwise from=5]
                 child[deprecated] { node [concept](RSAPSKSHA2){SHA}}
@@ -309,8 +309,8 @@
             }
             child[good] { node [concept]{AES\\256}[clockwise from=45]
               child[medium] { node [concept]{CBC}[clockwise from=45]
-                child[deprecated] { node [concept](RSAPSKSHA){SHA}}
-                child { node [concept]{SHA384}}
+                child[deprecated] { node [concept]{SHA}}
+                child { node [concept](RSAPSKSHA){SHA384}}
               }
               child { node [concept]{GCM}[clockwise from=0]
                 child { node [concept]{SHA384}}
@@ -480,12 +480,12 @@
 \end{xen}
 \begin{xfr}
     \info[15]{RSA3DES.north}{anchor=south east}{%
-      \item[] L'algorithme 3DES-EDE ne doit plus être utilisé du fait des attaques par collision sur les chiffrement par bloc de 32 bits.
+      \item[] L'algorithme 3DES-EDE ne doit plus être utilisé du fait des attaques par collision sur les chiffrement par bloc de 64 bits comme sweet32.
     }
 \end{xfr}
 \begin{xen}
     \info[15]{RSA3DES.north}{anchor=south east}{%
-      \item[] 3DES-EDE must not be used due to 32 bits block cipher attacks.
+      \item[] 3DES-EDE must not be used due to 64 bits block cipher attacks like sweet32.
     }
 \end{xen}
 \begin{xfr}
@@ -600,12 +600,22 @@
 \end{xen}
 \begin{xfr}
       \info[17]{RSAPSKSHA2.east}{anchor=west}{%
-      \item[] \textit{\textbf{RSA}} est utilisé comme protocole d'authentification du serveur et d'échange de clefs tel que défini par la \href{https://tools.ietf.org/html/rfc5246\#section-8.1.1}{\textbf{RFC 5246 - §8.1}}. Le protocole consiste en la génération d'un \textit{pre\_master\_secret} par le client qui l'envoie chiffré au serveur. Dans le cas de \textbf{RSA}\_\textit{PSK}, la clef partagée consiste alors en la longueur du bloc (par défaut 48), la version et 46 bits aléatoire concaténés avec la longueur du PSK et le PSK (en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-4}{\textbf{RFC 4279 - §4}}).
+      \item[] \textit{\textbf{RSA}} est utilisé comme protocole d'authentification du serveur et d'échange de clefs tel que défini par la \href{https://tools.ietf.org/html/rfc5246\#section-8.1.1}{\textbf{RFC 5246 - §8.1}}. Le protocole consiste en la génération d'un \textit{pre\_master\_secret} par le client qui l'envoie chiffré au serveur. Dans le cas de \textbf{RSA}\_\textit{PSK}, la clef partagée consiste alors en la longueur du bloc (par défaut 48), la version et 46 bits aléatoire concaténés avec la longueur du PSK et le PSK (en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-4}{\textbf{RFC 4279 - §4}}). 
     }
 \end{xfr}
 \begin{xen}
       \info[17]{RSAPSKSHA2.east}{anchor=west}{%
       \item[] \textit{\textbf{RSA}} is used as authenticated key exchange protocol as specified in the \href{https://tools.ietf.org/html/rfc5246\#section-8.1.1}{\textbf{RFC 5246 - §8.1}}. This protocol is based on the generation of a \textit{pre\_master\_secret} by the client who sends it encrypted to the server. For \textbf{RSA}\_\textit{PSK}, the shared key becomes a concatenation of block's size, version and 46 random bits with the PSK's size and PSK (based on \href{https://tools.ietf.org/html/rfc4279\#section-4}{\textbf{RFC 4279 - §4}}).
+    }
+\end{xen}
+\begin{xfr}
+      \info[17]{RSAPSKSHA.east}{anchor=south west}{%
+      \item[] \textit{\textbf{RSA}} est désormais considéré comme déprécié du à l'absence de fonction de Perfect Forward Secrecy définie aujourd'hui comme une obligation dans  les cryptosystèmes de communication modernes. La PFS permet de rendre la sécurité d'une communication indépendante a posteriori de la clef privée du serveur.
+    }
+\end{xfr}
+\begin{xen}
+      \info[17]{RSAPSKSHA.east}{anchor=south west}{%
+      \item[] \textit{\textbf{RSA}} is now considered as deprecated due to its lack of Perfect Forward Secrecy support. The PFS is regarded as a requirement in modern cryptosystems as he allowed to separate security of a communication a posteriori from the secret of the server private key.
     }
 \end{xen}
 \begin{xfr}
