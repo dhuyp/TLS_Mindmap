@@ -107,7 +107,7 @@
         child[bad] { node [concept](RSAIDEA){IDEA}}
         child[bad] { node [concept](RSADES){DES}}
     }%Famille des Diffie-Hellman et Elliptique Curve Diffie-Hellman
-    child[sibling angle=50] {
+    child[deprecated,sibling angle=50] {
       node[concept] {\underline{DH}}
         [clockwise from=350]
         child[good] { node [concept](DHRSA){\textit{RSA}}[clockwise from=130]       
@@ -235,7 +235,7 @@
             child[bad] { node [concept]{NULL}}
         }
     }
-    child[sibling angle=39] {
+    child[deprecated,sibling angle=39] {
       node[concept] (ECDH) {\underline{ECDH}} [counterclockwise from=220]
         child[bad] { node [concept](ECDHANON){\textit{Anon}}}
     }
@@ -342,8 +342,8 @@
     \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDHRC4);
     \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (ECDHAES128);
     \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDH3DES);
-    \path (ECDH) to[circle connection bar switch color=from (Cerulean) to (green!40!black) ] (ECDHECDSA);
-    \path (ECDH) to[circle connection bar switch color=from (Cerulean) to (green!40!black) ] (ECDHRSA);
+    \path (ECDH) to[circle connection bar switch color=from (orange) to (green!40!black) ] (ECDHECDSA);
+    \path (ECDH) to[circle connection bar switch color=from (orange) to (green!40!black) ] (ECDHRSA);
     \path (SRPRSA) to[circle connection bar switch color=from (orange) to (red!60!black) ] (SRP3DES);
     \path (SRPDSS) to[circle connection bar switch color=from (orange) to (red!60!black) ] (SRP3DES);
     \fill [circle connection bar]
@@ -500,12 +500,12 @@
 \end{xen}
 \begin{xfr}
     \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
-      \item[] Les suites \textbf{DH} sont des algorithmes d'échanges de clef reposant sur la difficulté de calculer des factorisations dans des groupes finis. Les suites \textbf{DHE} permettent en plus de garantir le Perfect Forward Secrecy (PFS) c'est à dire la sécurité des communications antérieures en cas de compromission de la clef, en générant une clef à chaque session.
+      \item[] Les suites \textbf{DH} sont des algorithmes d'échanges de clef reposant sur la difficulté de calculer des factorisations dans des groupes finis. Comme pour RSA, cependant le calcul de paramètres fixes peut permettre le déchiffrement a posteriori.\\ Les suites \textbf{DHE} (Ephemeral) permettent en plus de garantir le Perfect Forward Secrecy (PFS) c'est à dire la sécurité des communications antérieures en cas de compromission de la clef, en générant une clef à chaque session.
     }
 \end{xfr}
 \begin{xen}
     \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
-      \item[] \textbf{DH} ciphersuits use Key Exchange algorithms based on factorisation difficulty of a GF(p). \textbf{DHE} ciphersuits allow Perfect Forward Secrecy (PFS), i.e. previous communication protection even after key compromission.
+      \item[] \textbf{DH} ciphersuits use Key Exchange algorithms based on factorisation difficulty of a GF(p). However, as with RSA, the computation of fixed parameters allowed retroactiv attacks.\\ \textbf{DHE} ciphersuits allow Perfect Forward Secrecy (PFS), i.e. previous communication protection even after key compromission.
     }
 \end{xen}
 \begin{xfr}
@@ -560,12 +560,12 @@
 \end{xen}
 \begin{xfr}
       \info[17]{PSK.south}{anchor=north west}{%
-      \item[] \textit{\textbf{PSK}} est utilisé comme protocole d'échange permettant également de gérer l'authentification du serveur. Il repose sur le partage préalable de la clef symétrique de communication en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK est très utile dans un contexte de systèmes embarqués.
+      \item[] \textit{\textbf{PSK}} est utilisé comme protocole d'échange permettant également de gérer l'authentification du serveur. Il repose sur le partage préalable de la clef symétrique de communication en accord avec la \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK est très utile dans un contexte de systèmes embarqués mais ne supporte pas la PFS.
     }
 \end{xfr}
 \begin{xen}
       \info[17]{PSK.south}{anchor=north west}{%
-      \item[] \textit{\textbf{PSK}} is used as an exchange protocol with authentication included. It uses a Pre-Shared Key as specified in the \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK is useful in embeded systems.
+      \item[] \textit{\textbf{PSK}} is used as an exchange protocol with authentication included. It uses a Pre-Shared Key as specified in the \href{https://tools.ietf.org/html/rfc4279\#section-2}{\textbf{RFC 4279 - §2}}.\\PSK is useful in embeded systems but doesn't support PFS.
     }
 \end{xen}
 \begin{xfr}
