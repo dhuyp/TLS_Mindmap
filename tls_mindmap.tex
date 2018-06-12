@@ -7,7 +7,7 @@
 %%% Pierre d'Huy 2016 @ pierre _AT_ dhuy _DOT_ net
 
 %% Mindmap inspiré du travaille de Stefan Kottwitz
-% Les boites d'informations ont été entièrement écrites par lui
+% Le code des boites d'informations a été entièrement écrit par lui
 % Le code de l'encart est inspiré de lui
 
 %TODO:
@@ -23,8 +23,8 @@
 \usepackage{amsfonts}
 \usepackage{comment}
 
-\includecomment{xfr}% for settings language
-\excludecomment{xen}%
+\excludecomment{xen}% for settings language
+\includecomment{xfr}%
 
 \renewcommand{\familydefault}{\sfdefault}
 
@@ -48,13 +48,13 @@
 \begin{document}
 
 \begin{tikzpicture}[ every annotation/.style = {draw, fill = white, font = \Large}]
-  \path[mindmap,concept color=Cerulean,text=white,
+  \path[mindmap,concept color=blue!55!white,text=white,
     every node/.style={concept},
-    root/.style    = {concept color=Cerulean,
+    root/.style    = {concept color=blue!55!white,
       font=\LARGE\bfseries,text width=10em},
     good/.style    = {concept color=green!40!black},
     bad/.style    = {concept color=red!60!black},
-    medium/.style    = {concept color=Cerulean},
+    medium/.style    = {concept color=blue!55!white},
     deprecated/.style    = {concept color=orange},
     level 1 concept/.append style={font=\Large\bfseries,
       sibling angle=45,text width=7em,
@@ -91,7 +91,7 @@
         }
         child[medium] { node [concept]{CAMELLIA\\128}[clockwise from=350]
           child { node [concept]{CBC}[clockwise from=0]
-            child { node [concept](RSACAM128SHA){SHA}}
+            child[deprecated] { node [concept](RSACAM128SHA){SHA}}
           }
         }
         child[good] { node [concept]{CAMELLIA\\256}[clockwise from=350]
@@ -99,7 +99,7 @@
             child[deprecated] { node [concept](RSACAM256SHA){SHA}}
           }
         }
-        child[deprecated] { node [concept] {SEED}[clockwise from=340]
+        child[deprecated] { node [concept]{SEED}[clockwise from=340]
           child { node [concept]{CBC}[clockwise from=350]
             child { node [concept](RSASEEDSHA){SHA}}
           }
@@ -215,7 +215,7 @@
             child [bad]{ node [concept]{3DES\\EDE}[counterclockwise from=270]}
             child[medium] { node [concept]{AES\\128}[clockwise from=270]
               child { node [concept]{CBC}[clockwise from=280]
-                child[deprecated] { node [concept]{SHA}}
+                child[deprecated] { node [concept](ECDHEPSKSHA){SHA}}
                 child { node [concept]{SHA256}}
               }
               child { node [concept]{GCM}[clockwise from=230]
@@ -336,11 +336,11 @@
     \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DHDES);
     \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (DH3DES);
     \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (orange)] (DHSEED);
-    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (DHCAMELLIA128);
-    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (DHAES128);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (blue!55!white)] (DHCAMELLIA128);
+    \path (DHDSS) to[circle connection bar switch color=from (green!40!black) to (blue!55!white)] (DHAES128);
     \path (ECDHECDSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDHNULL);
     \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDHRC4);
-    \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (Cerulean)] (ECDHAES128);
+    \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (blue!55!white)] (ECDHAES128);
     \path (ECDHRSA) to[circle connection bar switch color=from (green!40!black) to (red!60!black)] (ECDH3DES);
     \path (ECDH) to[circle connection bar switch color=from (orange) to (green!40!black) ] (ECDHECDSA);
     \path (ECDH) to[circle connection bar switch color=from (orange) to (green!40!black) ] (ECDHRSA);
@@ -370,13 +370,15 @@
 
 
 %Légende
-  \path(50em, -55em)[mindmap,concept color=Cerulean,text=white,
+
+\begin{xfr}
+  \path(50em, -55em)[mindmap,concept color=blue!55!white,text=white,
     every node/.style={concept},
-    root/.style    = {concept color=Cerulean,
+    root/.style    = {concept color=blue!55!white,
       font=\LARGE\bfseries,text width=10em},
     good/.style    = {concept color=green!40!black},
     bad/.style    = {concept color=red!60!black},
-    medium/.style    = {concept color=Cerulean},
+    medium/.style    = {concept color=blue!55!white},
     deprecated/.style    = {concept color=orange},
     level 1 concept/.append style={font=\small\bfseries,
       sibling angle=45,text width=7em,
@@ -388,23 +390,22 @@
   ]
   node[root] {Protocole} [counterclockwise from=0]
      child {
-      node [concept]{\underline{Key Exchange} \underline{Protocol}}
-        child { node [concept]{\textit{Authentication Protocol}}
-          child { node [concept]{Symetric Encryption Algorithm}
-            child { node [concept]{Encryption Mode}
-              child { node [concept]{Hash Algorithm}}
+      node [concept]{\underline{\'Echange de clef}}
+        child { node [concept]{\scriptsize\textit{Authentification}}
+          child { node [concept]{\scriptsize{Chiffrement symétrique}}
+            child { node [concept]{Mode de chiffrement}
+              child { node [concept]{Hash}}
           }
         }
       }
     };
-\begin{xfr}
   \path(57em, -45em)[mindmap,concept color=green!40!black,text=white,
     every node/.style={concept},
     root/.style    = {concept color=green!40!black,
       font=\large\bfseries,text width=7em,level distance=12em},
     good/.style    = {concept color=green!40!black},
     bad/.style    = {concept color=red!60!black},
-    medium/.style    = {concept color=Cerulean},
+    medium/.style    = {concept color=blue!55!white},
     deprecated/.style    = {concept color=orange},
     level 1 concept/.append style={font=\large\bfseries,level distance=12em,text width=7em},
     level 2 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
@@ -421,13 +422,40 @@
     };
 \end{xfr}
 \begin{xen}
+  \path(50em, -55em)[mindmap,concept color=blue!55!white,text=white,
+    every node/.style={concept},
+    root/.style    = {concept color=Cerulean,
+      font=\LARGE\bfseries,text width=10em},
+    good/.style    = {concept color=green!40!black},
+    bad/.style    = {concept color=red!60!black},
+    medium/.style    = {concept color=blue!55!white},
+    deprecated/.style    = {concept color=orange},
+    level 1 concept/.append style={font=\small\bfseries,
+      sibling angle=45,text width=7em,
+    level distance=13em,inner sep=0pt},
+    level 2 concept/.append style={font=\small\bfseries,level distance=10em,text width=6em},
+    level 3 concept/.append style={font=\footnotesize\bfseries,level distance=8em,text width=4.5em},
+    level 4 concept/.append style={font=\scriptsize\bfseries,level distance=6em,text width=4em},
+    level 5 concept/.append style={font=\tiny\bfseries,level distance=5.5em,text width=4em}
+  ]
+  node[root] {Protocol} [counterclockwise from=0]
+     child {
+      node [concept]{\underline{Key Exchange Protocol}}
+        child { node [concept]{\textit{Authentication Protocol}}
+          child { node [concept]{Symetric Encryption Algorithm}
+            child { node [concept]{Encryption Mode}
+              child { node [concept]{Hash Algorithm}}
+          }
+        }
+      }
+    };
   \path(57em, -45em)[mindmap,concept color=green!40!black,text=white,
     every node/.style={concept},
     root/.style    = {concept color=green!40!black,
       font=\large\bfseries,text width=7em,level distance=12em},
     good/.style    = {concept color=green!40!black},
     bad/.style    = {concept color=red!60!black},
-    medium/.style    = {concept color=Cerulean},
+    medium/.style    = {concept color=blue!55!white},
     deprecated/.style    = {concept color=orange},
     level 1 concept/.append style={font=\large\bfseries,level distance=12em,text width=7em},
     level 2 concept/.append style={font=\large\bfseries,level distance=10em,text width=7em},
@@ -447,12 +475,12 @@
 \begin{xfr}
 %Encart explicatif
     \encart[43]{(67em,45em}{anchor=north west}{%
-      \textbf{\Huge{Cartographie des suites cryptographiques TLS}}\newline\\\Large{Cette mindmap représente l'état de l'art en matière de suites cryptographiques. Elle a été réalisée à des fins pratiques pour permettre une lecture rapide des éléments dangereux. Pour des raisons de lisibilité, les branches dites dangereuses telles que les suites EXPORT ou NULL sont tronquées après l'élément les déterminant comme dangereuses.\\Cette carte représente les recommandations en accord avec les RFC, le NIST et l'ANSSI, telles que:\begin{itemize}\item \textbf{Recommandé} désigne les algorithmes et les suites cryptographiques considérés comme sûrs au vu de l'état de l'art.\item \textbf{Standard} désigne un algorithme ou une ciphersuite n'étant sujet à aucune recommandation mais n'étant pas sujet à une contre-indication majeure.\item \textbf{Désuet} désigne les algorithmes étant considérés aujourd'hui comme faibles et exposés à certaines attaques. Cependant, ou qu'une mitigation existe côté client, ou que ce protocole soit nécessaire pour fonctionner avec d'anciens navigateurs, ils restent possibles à utiliser en acceptant le risque induit.\item\textbf{Dangereux} désigne les ciphersuites ne permettant aucune protection de la confidentialité, de l'authenticité ou de l'intégrité. Elles peuvent être classées ainsi pour des principes de fonctionnement (Anon et NULL), des faibles tailles de clef (DES,IDEA,EXPORT), des faiblesses majeures dans le mécanisme de chiffrement (RC4).\end{itemize}De plus les algorithmes sont représentés dans l'ordre de lecture de la suite cryptographique, c'est à dire:\begin{itemize}\item \textbf{Protocole} (Ici forcément TLS) \item \underline{\textbf{Key Exchange Protocol}} (en souligné) est le protocole utilisé pour l'échange de clef. \item \textit{Authentication Protocol} (en italique) est le protocole assurant l'authenticité de la connexion en étant utilisé pour la signature de la communication. Cette étape peut être facultative et à la charge de l'algorithme d'échange de clef.\item Symetric Encryption Algorithm est l'algorithme utilisé pour chiffrer la communication. \item Encryption Mode est le mode de chiffrement par bloc utilisé avec cet algorithme.\item Hash algorithm est l'algorithme de hash utilisé pour le contrôle d'intégrité des messages. \end{itemize}Pour des raisons pratiques les algorithmes expérimentaux n'ont pas été représentés, tel que CECPQ1\_ECDSA, suites cryptographiques testées par Google dans son navigateur Chrome pour la Cryptographie Post Quantique. De même, l'algorithme GOST utilisé sous ses formes GOSTR341094 et GOSTR341001 n'a pas été représenté du fait du manque d'utilité et de son danger. En effet les attaques actuelles permettent de s'attaquer à l'algorithme de chiffrement symétrique GOST28147 en $2^{101}$ opérations}.
+      \textbf{\Huge{Cartographie des suites cryptographiques TLS}}\newline\\\Large{Cette mindmap représente l'état de l'art en matière de suites cryptographiques. Elle a été réalisée à des fins pratiques pour permettre une lecture rapide des éléments dangereux. Pour des raisons de lisibilité, les branches dites dangereuses telles que les suites EXPORT ou NULL sont tronquées après l'élément les déterminant comme dangereuses.\\Cette carte représente les recommandations en accord avec les RFC, le NIST et l'ANSSI, telles que:\begin{itemize}\item \textbf{Recommandé} désigne les algorithmes et les suites cryptographiques considérés comme sûrs au vu de l'état de l'art.\item \textbf{Standard} désigne un algorithme ou une suite cryptographique n'étant sujet à aucune recommandation mais n'étant pas sujet à une contre-indication majeure.\item \textbf{Désuet} désigne les algorithmes étant considérés aujourd'hui comme faibles et exposés à certaines attaques. Cependant, ou qu'une mitigation existe côté client, ou que ce protocole soit nécessaire pour fonctionner avec d'anciens navigateurs, ils restent possibles à utiliser en acceptant le risque induit.\item\textbf{Dangereux} désigne les suites cryptographiques ne permettant aucune protection de la confidentialité, de l'authenticité ou de l'intégrité. Elles peuvent être classées ainsi pour des principes de fonctionnement (Anon et NULL), des faibles tailles de clef (DES,IDEA,EXPORT), des faiblesses majeures dans le mécanisme de chiffrement (RC4).\end{itemize}De plus les algorithmes sont représentés dans l'ordre de lecture de la suite cryptographique, c'est à dire:\begin{itemize}\item \textbf{Protocole} (Ici forcément TLS) \item \underline{\textbf{Key Exchange Protocol}} (en souligné) est le protocole utilisé pour l'échange de clef. \item \textit{Authentication Protocol} (en italique) est le protocole assurant l'authenticité de la connexion en étant utilisé pour la signature de la communication. Cette étape peut être facultative et à la charge de l'algorithme d'échange de clef.\item Symetric Encryption Algorithm est l'algorithme utilisé pour chiffrer la communication. \item Encryption Mode est le mode de chiffrement par bloc utilisé avec cet algorithme.\item Hash algorithm est l'algorithme de hash utilisé pour le contrôle d'intégrité des messages. \end{itemize}Pour des raisons pratiques les algorithmes expérimentaux n'ont pas été représentés, tel que CECPQ1\_ECDSA, suites cryptographiques testées par Google dans son navigateur Chrome pour la Cryptographie Post Quantique. De même, l'algorithme GOST utilisé sous ses formes GOSTR341094 et GOSTR341001 n'a pas été représenté du fait du manque d'utilité et de son danger. En effet les attaques actuelles permettent de s'attaquer à l'algorithme de chiffrement symétrique GOST28147 en $2^{101}$ opérations}.
     }
 \end{xfr}
 \begin{xen}
     \encart[43]{(67em,45em}{anchor=north west}{%
-      \textbf{\Huge{Mindmap for TLS Ciphersuits}}\newline\\\Large{This mindmap presents the state of the art of TLS ciphersuits. Its first functionnality is to offer an explicit reading for dangerous items. To be readable, the dangerous branchs (like EXPORT or NULL) have been cut after the first identified danger.\\This mindmap illustrates recommandations about usage according to RFC, NIST and the french security agency, ANSSI. These recommandations are structured in 4 categories:\begin{itemize}\item \textbf{Recommanded}: The recommanded algorithms are chosen according to the state of the art in Cryptography. These algorithms \textit{should} be used. \item \textbf{Standard}: The ''standard'' algorithms are defined by algorithm without any recommandation either any known problems. These algorithms \textit{can} be used. \item \textbf{Deprecated}: The deprecated algorithms are algorithms with known weakness or problems but needed for legacy. These algorithms \textit{shouldn't} be used. \item\textbf{Dangerous}: The dangerous algorithms expose integrity, confidentiality or authenticity. These algorithms can be classified as dangerous for many reasons: by design (Anon and NULL), weak size of key (DES,IDEA,EXPORT) or weakness in  implementation (RC4). These algorithms \textit{must not} be used.\end{itemize}Algorithms are presented following the order of ciphersuits reading, i.e. :\begin{itemize}\item \textbf{Protocol} (Here it's TLS) \item \underline{\textbf{Key Exchange Protocol}} (underlined) is the protocol used in Server and Client Key Exchange.\item \textit{Authentication Protocol} (italics) is the protocol used to signed the communication. This protocol can be substituted with Key Exchange Protocol for some ciphersuits. \item Symetric Encryption Algorithm is the cipher algorithm used for the communication. \item Encryption Mode is the block cipher mode used by the encryption algorithm.\item Hash algorithm is used to control integrity of packet with MAC. \end{itemize}For practical reason, the experimental algorithms, like CECPQ1\_ECDSA, won't be presented. GOST en FORTENZA algorithms won't be shown either and must not be used}.
+      \textbf{\Huge{Mindmap for TLS Cipher Suits}}\newline\\\Large{This mindmap presents the state of the art of TLS cipher suits. Its first functionnality is to offer an explicit reading for dangerous items. To be readable, the dangerous branchs (like EXPORT or NULL) have been cut after the first identified danger.\\This mindmap illustrates recommandations about usage according to RFC, NIST and the french security agency, ANSSI. These recommandations are structured in 4 categories:\begin{itemize}\item \textbf{Recommanded}: The recommanded algorithms are chosen according to the state of the art in Cryptography. These algorithms \textit{should} be used. \item \textbf{Standard}: The ''standard'' algorithms are defined by algorithm without any recommandation either any known problems. These algorithms \textit{can} be used. \item \textbf{Deprecated}: The deprecated algorithms are algorithms with known weakness or problems but needed for legacy. These algorithms \textit{shouldn't} be used. \item\textbf{Dangerous}: The dangerous algorithms expose integrity, confidentiality or authenticity. These algorithms can be classified as dangerous for many reasons: by design (Anon and NULL), weak size of key (DES,IDEA,EXPORT) or weakness in  implementation (RC4). These algorithms \textit{must not} be used.\end{itemize}Algorithms are presented following the order of cipher suits reading, i.e. :\begin{itemize}\item \textbf{Protocol} (Here it's TLS) \item \underline{\textbf{Key Exchange Protocol}} (underlined) is the protocol used in Server and Client Key Exchange.\item \textit{Authentication Protocol} (italics) is the protocol used to signed the communication. This protocol can be substituted with Key Exchange Protocol for some cipher suits. \item Symetric Encryption Algorithm is the cipher algorithm used for the communication. \item Encryption Mode is the block cipher mode used by the encryption algorithm.\item Hash algorithm is used to control integrity of packet with MAC. \end{itemize}For practical reason, the experimental algorithms, like CECPQ1\_ECDSA, won't be presented. GOST and FORTENZA algorithms won't be shown either and must not be used}.
     }
 \end{xen}
 
@@ -465,7 +493,7 @@
 \end{xfr}
 \begin{xen}
     \info[20]{ANYEXPORT.north}{anchor=south west}{%
-      \item[] The \textbf{EXPORT} ciphersuits has been built as dangerous and must not be used except under heavy law restriction.
+      \item[] The \textbf{EXPORT} cipher suits has been built as dangerous and must not be used except under heavy law restriction.
     }
 \end{xen}
 \begin{xfr}
@@ -475,7 +503,7 @@
 \end{xfr}
 \begin{xen}
     \info[20]{KRB5DES.north}{anchor=south west}{%
-      \item[] The \textbf{KRB5} ciphersuits are based on Kerberos and use ticket to encrypt and send the \textit{pre\_master\_secret} in Kerberos Session.
+      \item[] The \textbf{KRB5} cipher suits are based on Kerberos and use ticket to encrypt and send the \textit{pre\_master\_secret} in Kerberos Session.
      }
 \end{xen}
 \begin{xfr}
@@ -498,14 +526,25 @@
       \item[] The Key Exchange is easy to hijack without authentication and should be signed to avoid Man-in-the-Middle attack.
     }
 \end{xen}
+
+\begin{xfr}
+    \info[20]{ECDHEPSKSHA.south}{anchor=north}{%
+      \item[] Les suites \textbf{ECDH} et l'algorithme de signature\textit{ECDSA} permettent l'utilisation de multiples courbes définient dans l'extension \textit{Supported Elliptic Curves} du \textit{ClientHello}. L'ensemble des courbes est définie dans la \href{https://tools.ietf.org/html/rfc4492\#section-5.1.1}{\textbf{RFC4492 - §5.1}} et privilégie les courbes du NIST. Cependant, une soumission a été faite pour proposé la courbe X25519.
+    }
+\end{xfr}
+\begin{xen}
+    \info[20]{ECDHEPSKSHA.south}{anchor=north}{%
+      \item[] \textbf{ECDH} cipher suits and \textit{ECDSA} keyexchange algorithm allow the use of multiple curves difined in the \textit{Supported Elliptic Curves} extension  of the \textit{ClientHello} message. The set of curve has been defined in the \href{https://tools.ietf.org/html/rfc4492\#section-5.1.1}{\textbf{RFC4492 - §5.1}}  and encourage use of NIST standards. However, a draft has been submitted to incorporate x25519 curve.
+    }
+\end{xen}
 \begin{xfr}
     \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
-      \item[] Les suites \textbf{DH} sont des algorithmes d'échanges de clef reposant sur la difficulté de calculer des factorisations dans des groupes finis. Comme pour RSA, cependant le calcul de paramètres fixes peut permettre le déchiffrement a posteriori.\\ Les suites \textbf{DHE} (Ephemeral) permettent en plus de garantir le Perfect Forward Secrecy (PFS) c'est à dire la sécurité des communications antérieures en cas de compromission de la clef, en générant une clef à chaque session.
+      \item[] Les suites \textbf{DH} sont des algorithmes d'échanges de clef reposant sur la difficulté de calculer des factorisations dans des groupes finis. Comme pour RSA cependant, le calcul de paramètres fixes peut permettre le déchiffrement a posteriori.\\ Les suites \textbf{DHE} (Ephemeral) permettent en plus de garantir le Perfect Forward Secrecy (PFS) c'est à dire la sécurité des communications antérieures en cas de compromission de la clef, en générant une clef à chaque session.
     }
 \end{xfr}
 \begin{xen}
     \info[20]{ECDHECDSASHA256.south}{anchor=north west}{%
-      \item[] \textbf{DH} ciphersuits use Key Exchange algorithms based on factorisation difficulty of a GF(p). However, as with RSA, the computation of fixed parameters allowed retroactiv attacks.\\ \textbf{DHE} ciphersuits allow Perfect Forward Secrecy (PFS), i.e. previous communication protection even after key compromission.
+      \item[] \textbf{DH} cipher suits use Key Exchange algorithms based on factorisation difficulty of a GF(p). However, as with RSA, the computation of fixed parameters allowed retroactiv attacks.\\ \textbf{DHE} cipher suits allow Perfect Forward Secrecy (PFS), i.e. previous communication protection even after key compromission.
     }
 \end{xen}
 \begin{xfr}
@@ -545,7 +584,7 @@
 \end{xfr}
 \begin{xen}
     \info[22]{ECDHRSA.north}{anchor=south west}{%
-      \item[] The ciphersuits \textbf{*DHE\_*SA\_WITH\_AES\_256\_GCM\_SHA384} are recommanded. Indeed with PFS property and AES 256 solidity, it's the best possibility. Moreover, the use of GCM mode is authenticated and avoid padding attack like POODLE.
+      \item[] The cipher suits \textbf{*DHE\_*SA\_WITH\_AES\_256\_GCM\_SHA384} are recommanded. Indeed with PFS property and AES 256 solidity, it's the best possibility. Moreover, the use of GCM mode is authenticated and avoid padding attack like POODLE.
    }
 \end{xen}
 \begin{xfr}
@@ -576,6 +615,16 @@
 \begin{xen}
       \info[17]{RSADES.west}{anchor=north east}{%
       \item[] Nowadays, DES and IDEA are too weak to grant good security.
+    }
+\end{xen}
+\begin{xfr}
+      \info[9]{DHRSAEXPORT.east}{anchor=west}{%
+      \item[] SEED a été défini comme déprécié car n'étant plus utilisé couramment.
+    }
+\end{xfr}
+\begin{xen}
+      \info[9]{DHRSAEXPORT.east}{anchor=west}{%
+      \item[] SEED have been considered as deprecated due to lack of current use.
     }
 \end{xen}
 \begin{xfr}
@@ -645,7 +694,7 @@
 \end{xfr}
 \begin{xen}
       \info[17]{CAMELLIA256SHA.east}{anchor=south west}{%
-      \item[] CAMELLIA is a symetric encryption algorithm based on Feistel network. An extension of its ciphersuits implementation has been brought by the \href{https://tools.ietf.org/html/rfc6367}{\textbf{RFC 6367}}. These ciphersuits aren't shown here because of their lack of implementation. This algorithm is recommended by the japanese initiative CRYPTEREC. However, this algorithm isn't supported by any major web browser.
+      \item[] CAMELLIA is a symetric encryption algorithm based on Feistel network. An extension of its cipher suits implementation has been brought by the \href{https://tools.ietf.org/html/rfc6367}{\textbf{RFC 6367}}. These cipher suits aren't shown here because of their lack of implementation. This algorithm is recommended by the japanese initiative CRYPTEREC. However, this algorithm isn't supported by any major web browser.
     }
 \end{xen}
 \begin{xfr}
@@ -660,10 +709,10 @@
 \end{xen}
 %Licence du document, pas du code :)
 \begin{xfr}
-  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\Ce document est un travail de Pierre d'Huy sous licence CC-by-sa \\v1.6 (FR-10/12/2017) -- \textit{pierre.dhuy.net}\end{center}}
+  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\Ce document est un travail de Pierre d'Huy sous licence CC-by-sa \\v1.7 (FR-13/06/2018) -- \textit{pierre.dhuy.net}\end{center}}
 \end{xfr}
 \begin{xen}
-  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\This document is the work of Pierre d'Huy under CC-by-sa \\v 1.6 (EN-2017/12/10) --  \textit{pierre.dhuy.net}\end{center}}
+  \encart[43]{(-60em,-55em}{anchor=north west}{\begin{center}\includegraphics{ccbysa.png}\\This document is the work of Pierre d'Huy under CC-by-sa \\v 1.7 (EN-2018/06/13) --  \textit{pierre.dhuy.net}\end{center}}
 \end{xen}
 
 \end{tikzpicture}
