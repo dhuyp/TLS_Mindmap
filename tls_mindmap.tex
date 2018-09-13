@@ -23,8 +23,8 @@
 \usepackage{amsfonts}
 \usepackage{comment}
 
-\excludecomment{xen}% for settings language
-\includecomment{xfr}%
+\includecomment{xen}% for settings language
+\excludecomment{xfr}%
 
 \renewcommand{\familydefault}{\sfdefault}
 
@@ -440,7 +440,7 @@
   ]
   node[root] {Protocol} [counterclockwise from=0]
      child {
-      node [concept]{\underline{Key Exchange Protocol}}
+      node [concept]{\underline{Key Exchange} \underline{Protocol}}
         child { node [concept]{\textit{Authentication Protocol}}
           child { node [concept]{Symetric Encryption Algorithm}
             child { node [concept]{Encryption Mode}
